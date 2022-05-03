@@ -1,23 +1,18 @@
-import asyncio
 import json
-import logging
 import os
+from config import token, bot_url, bot_command, url_socket
+
 import requests
 import websockets
-from dotenv import load_dotenv
 
-
-load_dotenv('.env')
-token = os.getenv("my_token")
-logger = logging.getLogger(__name__)
-data_dict = '{"action":"sub","channel":"alliance:99010987"}'
+from bot import logger
 
 
 def send_telegram(text: str):
-    url = "https://api.telegram.org/bot"
+    url = bot_url
     channel_id = os.getenv("channel_id")
     url += token
-    method = url + "/sendMessage"
+    method = url + bot_command
     r = requests.post(method, data={
          "chat_id": channel_id,
          "text": text
@@ -30,7 +25,7 @@ def send_telegram(text: str):
 
 
 async def killmail(data: str):
-    uri = "wss://zkillboard.com/websocket/"
+    uri = url_socket
     async for websocket in websockets.connect(uri):
         try:
             await websocket.send(data)
@@ -42,13 +37,3 @@ async def killmail(data: str):
             continue
         except Exception as err:
             logger.error(f'{err}')
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s',
-                        filemode='a', filename='logs.log')
-    while True:
-        try:
-            asyncio.run(killmail(data=data_dict))
-        except Exception as e:
-            logger.error(f'{e}')

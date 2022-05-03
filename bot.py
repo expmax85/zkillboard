@@ -1,10 +1,12 @@
-import os
+import asyncio
+import logging
 import telebot
-from dotenv import load_dotenv
-from zkill_socket import logger
 
-load_dotenv('.env')
-token = os.getenv("my_token")
+from config import token, data_dict
+from zkill_socket import killmail
+
+
+logger = logging.getLogger(__name__)
 bot = telebot.TeleBot(token)
 
 
@@ -14,8 +16,11 @@ def send_welcome(message: 'telebot.types.Message') -> None:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s',
+                        filemode='a', filename='logs.log')
     while True:
         try:
             bot.polling(none_stop=True, interval=0)
+            asyncio.run(killmail(data=data_dict))
         except Exception as err:
-            logger.error(f'Bot: {err}')
+            logger.error(f'{err}')
