@@ -1,1 +1,1 @@
-# Telegram bot для филтрации киллмейлов с сайта zkillboard.com 
+# Telegram bot для фильтрации и отправки в телеграм киллмейлов с сайта zkillboard.com 
